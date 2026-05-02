@@ -1,0 +1,360 @@
+{
+  "name": "macmini-ai-coach-mcp",
+  "description": "MCP server configuration for MacMini-AI-Coach orchestration",
+  "version": "4.0",
+  "lastUpdated": "2026-05-02",
+  "classification": "Confidential",
+  "servers": {
+    "openclaw": {
+      "name": "OpenClaw",
+      "description": "Orchestrator, router, sensitivity classifier",
+      "host": "127.0.0.1",
+      "port": 8000,
+      "protocol": "http",
+      "endpoint": "/api/v1",
+      "authentication": {
+        "type": "none",
+        "note": "Localhost-only, no auth required"
+      },
+      "capabilities": [
+        "query_routing",
+        "sensitivity_classification",
+        "llm_selection",
+        "local_vs_cloud_decision"
+      ],
+      "config": {
+        "routing_mode": "local_first",
+        "local_threshold": 0.7,
+        "cloud_threshold": 0.4,
+        "timeout_ms": 5000,
+        "retry_count": 3
+      },
+      "health_check": {
+        "endpoint": "http://127.0.0.1:8000/health",
+        "interval_seconds": 30,
+        "timeout_ms": 1000
+      },
+      "logging": {
+        "level": "info",
+        "file": "~/.openclaw/logs/openclaw.log",
+        "max_size_mb": 100,
+        "retention_days": 30
+      }
+    },
+    "hermes": {
+      "name": "Hermes",
+      "description": "Executor, feedback learner, versioning and rollback",
+      "host": "127.0.0.1",
+      "port": 9000,
+      "protocol": "http",
+      "endpoint": "/api/v1",
+      "authentication": {
+        "type": "none",
+        "note": "Localhost-only, no auth required"
+      },
+      "capabilities": [
+        "execute_action",
+        "feedback_collection",
+        "version_management",
+        "rollback_capability",
+        "state_persistence"
+      ],
+      "config": {
+        "execution_timeout_ms": 30000,
+        "max_retries": 3,
+        "backoff_strategy": "exponential",
+        "feedback_learning": true
+      },
+      "logging": {
+        "level": "info",
+        "file": "~/.openclaw/logs/hermes.log",
+        "max_size_mb": 100,
+        "retention_days": 30
+      }
+    },
+    "nemoclaw": {
+      "name": "NemoClaw",
+      "description": "Privacy sandbox, 4-tier data classifier, cloud routing veto",
+      "host": "127.0.0.1",
+      "port": 9100,
+      "protocol": "http",
+      "endpoint": "/api/v1",
+      "authentication": {
+        "type": "none",
+        "note": "Localhost-only, no auth required. CRITICAL: Must respond before cloud routing"
+      },
+      "capabilities": [
+        "data_classification",
+        "tier_routing_enforcement",
+        "cloud_routing_veto",
+        "privacy_policy_enforcement",
+        "tier4_hard_block"
+      ],
+      "config": {
+        "default_tier": 1,
+        "classification_model": "keyword_based",
+        "veto_override_allowed": false,
+        "tier4_enforcement": "hard_block"
+      },
+      "data_tiers": {
+        "1": {
+          "name": "Public",
+          "allowed_routes": ["any"],
+          "blocked_routes": []
+        },
+        "2": {
+          "name": "Confidential",
+          "allowed_routes": ["obsidian", "proton_drive", "icloud_adp"],
+          "blocked_routes": ["telegram", "discord", "slack", "claude_web"]
+        },
+        "3": {
+          "name": "HC-External-Review",
+          "allowed_routes": ["obsidian", "approved_advisors"],
+          "blocked_routes": ["public_cloud", "generic_llm"]
+        },
+        "4": {
+          "name": "HC-Not-External",
+          "allowed_routes": ["local_only"],
+          "blocked_routes": ["any_cloud"],
+          "enforcement": "hard_veto"
+        }
+      },
+      "logging": {
+        "level": "info",
+        "file": "~/.openclaw/logs/nemoclaw.log",
+        "max_size_mb": 100,
+        "retention_days": 90,
+        "audit_trail": true
+      }
+    },
+    "ollama": {
+      "name": "Ollama",
+      "description": "Local-first LLM inference (arm64 optimized, M-series)",
+      "host": "127.0.0.1",
+      "port": 11434,
+      "protocol": "http",
+      "endpoint": "/api",
+      "authentication": {
+        "type": "none",
+        "note": "Localhost-only binding (enforced by LuLu firewall)"
+      },
+      "capabilities": [
+        "local_inference",
+        "model_management",
+        "context_window_control",
+        "token_counting"
+      ],
+      "models": [
+        {
+          "name": "qwen3:14b",
+          "size_gb": 9,
+          "primary_use": "Reasoning and code generation",
+          "optimization": "arm64",
+          "context_tokens": 8192
+        },
+        {
+          "name": "deepseek-coder-v2:16b",
+          "size_gb": 9,
+          "primary_use": "Code generation and review",
+          "optimization": "arm64",
+          "context_tokens": 8192
+        },
+        {
+          "name": "llama3.1:8b",
+          "size_gb": 5,
+          "primary_use": "General summarization and fallback",
+          "optimization": "arm64",
+          "context_tokens": 8192
+        }
+      ],
+      "config": {
+        "bind": "127.0.0.1:11434",
+        "num_gpu": 0,
+        "num_thread": 8,
+        "num_ctx": 8192,
+        "batch_size": 512,
+        "timeout_ms": 30000
+      },
+      "logging": {
+        "level": "warn",
+        "file": "~/.openclaw/logs/ollama.log"
+      }
+    }
+  },
+  "routing": {
+    "decision_tree": {
+      "step1_sensitivity_check": {
+        "query": "Is sensitivity >= 0.7?",
+        "if_yes": "step2_local_only",
+        "if_no": "step2_hybrid"
+      },
+      "step2_local_only": {
+        "description": "High sensitivity - use local Ollama only",
+        "route_to": "ollama",
+        "backend": "local",
+        "cost": "free"
+      },
+      "step2_hybrid": {
+        "description": "Medium sensitivity - try local first, cloud fallback",
+        "step2a": {
+          "query": "Does local model have latency < 5s?",
+          "if_yes": "use_local_result",
+          "if_no": "step3_cloud_decision"
+        }
+      },
+      "step3_cloud_decision": {
+        "description": "Consider cloud routing",
+        "query": "Does NemoClaw approve cloud routing for this tier?",
+        "if_yes": "route_to_best_cloud_llm",
+        "if_no": "abort_and_escalate"
+      },
+      "route_to_best_cloud_llm": {
+        "models_in_order": ["claude", "grok", "gemini", "chatgpt", "deepseek", "codex"],
+        "selection_weights": {
+          "accuracy": 0.48,
+          "completeness": 0.32,
+          "performance": 0.14,
+          "token_efficiency": 0.06
+        },
+        "cost_control": {
+          "per_model_cap": 20.0,
+          "account_total_cap": 25.0,
+          "auto_switch_on_cap_hit": true
+        }
+      }
+    }
+  },
+  "cloud_llms": {
+    "claude": {
+      "provider": "OpenRouter",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "model": "anthropic/claude-opus",
+      "monthly_cap_dollars": 20.0,
+      "primary_use": "Reasoning, code, strategy",
+      "accuracy_weight": 0.95,
+      "cost_per_1m_tokens": 3.0
+    },
+    "grok": {
+      "provider": "OpenRouter",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "model": "xai/grok-2",
+      "monthly_cap_dollars": 20.0,
+      "primary_use": "Real-time analysis, controversial topics",
+      "accuracy_weight": 0.88,
+      "cost_per_1m_tokens": 2.0
+    },
+    "gemini": {
+      "provider": "OpenRouter",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "model": "google/gemini-2.0-flash",
+      "monthly_cap_dollars": 20.0,
+      "primary_use": "Multimodal, specialized domains",
+      "accuracy_weight": 0.90,
+      "cost_per_1m_tokens": 2.5
+    },
+    "chatgpt": {
+      "provider": "OpenRouter",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "model": "openai/gpt-4-turbo",
+      "monthly_cap_dollars": 20.0,
+      "primary_use": "Broad knowledge, plugins",
+      "accuracy_weight": 0.87,
+      "cost_per_1m_tokens": 3.5
+    },
+    "deepseek": {
+      "provider": "OpenRouter",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "model": "deepseek/deepseek-chat",
+      "monthly_cap_dollars": 20.0,
+      "primary_use": "Cost-efficient reasoning",
+      "accuracy_weight": 0.82,
+      "cost_per_1m_tokens": 0.14
+    },
+    "codex": {
+      "provider": "OpenRouter",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "model": "openai/codex",
+      "monthly_cap_dollars": 20.0,
+      "primary_use": "Code generation and review",
+      "accuracy_weight": 0.93,
+      "cost_per_1m_tokens": 2.0
+    }
+  },
+  "security": {
+    "firewall": {
+      "outbound": {
+        "tool": "LuLu",
+        "rules": [
+          {
+            "process": "Ollama",
+            "direction": "outbound",
+            "action": "BLOCK",
+            "note": "Local inference only, no internet access"
+          },
+          {
+            "process": "*",
+            "direction": "outbound",
+            "action": "ALLOW_WHITELIST",
+            "note": "Whitelist specific processes for cloud routing"
+          }
+        ]
+      }
+    },
+    "credentials": {
+      "storage": "Environment variables only",
+      "vault_tool": "Termius 8-Vault",
+      "rotation_frequency_days": 30,
+      "hardcoded_credentials": "FORBIDDEN"
+    },
+    "logging_and_audit": {
+      "all_operations_logged": true,
+      "log_location": "~/.openclaw/logs/",
+      "retention_days": 30,
+      "audit_trail": "Git commit history + Obsidian vault"
+    }
+  },
+  "monitoring": {
+    "health_checks": {
+      "interval_seconds": 30,
+      "timeout_ms": 2000,
+      "retry_attempts": 3,
+      "escalate_after_failures": 3
+    },
+    "metrics": {
+      "track_latency": true,
+      "track_accuracy": true,
+      "track_cost": true,
+      "track_tokens": true,
+      "storage": "~/.openclaw/cost_tracker.sql"
+    },
+    "alerts": {
+      "nemoclaw_down": "CRITICAL - block all operations",
+      "api_spend_exceeded": "AUTO_SWITCH to next LLM",
+      "local_latency_slow": "Consider cloud fallback",
+      "cloud_latency_slow": "Fall back to local"
+    }
+  },
+  "maintenance": {
+    "daily": [
+      "Run health checks for all agents",
+      "Verify NemoClaw responding",
+      "Audit for blockers"
+    ],
+    "weekly": [
+      "Review cost tracking and budgets",
+      "Evaluate LLM performance metrics",
+      "Test disaster recovery"
+    ],
+    "monthly": [
+      "Rotate API credentials",
+      "Comprehensive security audit",
+      "LLM re-evaluation and weight adjustment"
+    ]
+  },
+  "notes": {
+    "criticality": "NemoClaw must respond before any cloud operations. If offline, all cloud routing is blocked.",
+    "local_first": "~90% of queries should route to Ollama (free, local). Cloud only when necessary.",
+    "cost_control": "Dual budget controls: per-LLM ($20/month) and account total ($25/month). Auto-switch triggers on limit hit.",
+    "arm64_optimization": "All local models are M-series optimized. No x86 code in execution path."
+  }
+}
