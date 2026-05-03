@@ -306,6 +306,6 @@ If something goes wrong:
 
 ---
 
-**Version:** v1.0  
+**Version:** v1.1  
 **Platform:** macOS (arm64/M4 Pro)  
 **Last Updated:** 2026-05-03

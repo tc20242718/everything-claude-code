@@ -1,7 +1,7 @@
 # MacMini-AI-Coach Telegram Bot
 # arm64/M4 Pro compatible — all packages have Apple Silicon wheels
 
-python-telegram-bot==21.6
-httpx==0.27.0
-cryptography==42.0.8
-python-dotenv==1.0.1
+python-telegram-bot==22.7
+httpx==0.28.1
+cryptography==47.0.0
+python-dotenv==1.2.2

@@ -1,7 +1,7 @@
 # Telegram NLP Bot — Deployment Manifest
 
 **Created:** 2026-05-03  
-**Version:** 1.0  
+**Version:** 1.1  
 **Status:** Ready for deployment  
 **Platform:** macOS arm64 (M4 Pro)
 
@@ -269,5 +269,5 @@ If something goes wrong:
 ---
 
 **Backup created:** 2026-05-03 21:30 UTC  
-**Version:** 1.0 (production-ready)  
+**Version:** 1.1 (dependencies upgraded)  
 **Ready for deployment:** ✅ Yes
