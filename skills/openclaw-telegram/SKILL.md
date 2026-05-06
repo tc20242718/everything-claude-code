@@ -149,8 +149,11 @@ Run these on the Mac in Terminus to diagnose issues. All single-line, no backsla
 # Is the gateway running?
 ps aux | grep openclaw
 
-# Is Ollama running and which models are loaded?
-curl http://localhost:11434/api/tags
+# Check for MULTIPLE Ollama processes (if found, kill all and restart)
+ps aux | grep ollama
+
+# Is Ollama responding and how fast?
+time curl http://localhost:11434/api/generate -X POST -H 'Content-Type: application/json' -d '{"model":"llama3.1:8b","prompt":"Say hello in one sentence","stream":false}'
 
 # Check OpenClaw logs for errors
 tail -50 ~/.openclaw/logs/gateway.log
@@ -158,6 +161,11 @@ tail -50 ~/.openclaw/logs/gateway.log
 # Verify current model setting (safe to share — no credentials)
 openclaw config get agents.defaults.model
 ```
+
+### Expected Response Times
+- llama3.1:8b: ~4-5 seconds (normal, M4 Pro with GPU)
+- qwen3:14b: ~10-15 seconds (normal)
+- Over 30 seconds: Likely multiple Ollama processes or GPU disabled
 
 ---
 
@@ -193,14 +201,20 @@ openclaw config get agents.defaults.model
 **Fix:** Verify config schema structure before suggesting set commands. Asked user to run `openclaw config get agents.defaults` to see actual keys.  
 **Rule:** When unsure about a config path, ask the user to share the structure (keys only) to verify before suggesting commands.
 
+### ERROR-007: Multiple Ollama processes caused 60+ second slowness
+**What happened:** User reported Telegram replies taking over a minute, even with llama3.1:8b. Diagnosed to find 3 Ollama processes running simultaneously (Homebrew, /usr/local, and Ollama.app), causing port/resource conflicts.  
+**Fix:** `killall ollama` then restart single instance: `/Applications/Ollama.app/Contents/Resources/ollama serve &`. Response time dropped from 60s+ to 4.7s.  
+**Rule:** Check for duplicate service instances before blaming model performance. Use `ps aux | grep [service]` to verify only one instance running.
+
 ---
 
-## Checklist Before Suggesting Config Commands
+## Checklist Before Suggesting Commands
 
 - [ ] Have I verified the config key path exists by checking actual schema?
 - [ ] If unsure, ask user to run `openclaw config get [path]` and share structure only?
 - [ ] Are all commands single-line (no backslash continuation)?
 - [ ] Have I tested the command description against the documented valid paths?
+- [ ] For URLs in curl/HTTP commands: NO angle brackets `<>`, NO quotes around the URL (Terminus/zsh will break them)
 
 ## Checklist Before Asking User to Share Output
 
