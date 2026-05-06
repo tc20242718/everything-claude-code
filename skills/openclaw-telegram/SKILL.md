@@ -151,7 +151,10 @@ ps aux | grep openclaw
 # Check for MULTIPLE Ollama processes (if found, kill all and restart)
 ps aux | grep ollama
 
-# Is Ollama responding and how fast?
+# Is Ollama running and responding?
+curl http://localhost:11434/api/tags
+
+# Test Ollama inference speed (run in NEW TAB while gateway runs in background)
 time curl http://localhost:11434/api/generate -X POST -H 'Content-Type: application/json' -d '{"model":"llama3.1:8b","prompt":"Say hello in one sentence","stream":false}'
 
 # Check OpenClaw logs for errors
@@ -204,6 +207,11 @@ openclaw config get agents.defaults.model
 **What happened:** User reported Telegram replies taking over a minute, even with llama3.1:8b. Diagnosed to find 3 Ollama processes running simultaneously (Homebrew, /usr/local, and Ollama.app), causing port/resource conflicts.  
 **Fix:** `killall ollama` then restart single instance: `/Applications/Ollama.app/Contents/Resources/ollama serve &`. Response time dropped from 60s+ to 4.7s.  
 **Rule:** Check for duplicate service instances before blaming model performance. Use `ps aux | grep [service]` to verify only one instance running.
+
+### ERROR-008: Assumed user needed to exit foreground process to run tests
+**What happened:** Suggested ctrl+z/bg backgrounding when user was running gateway in foreground. User said "wrong format."  
+**Fix:** Terminus has native tab support. Just open new tab (Cmd+T) to run diagnostic commands while gateway runs in first tab.  
+**Rule:** In Terminus, use new tabs instead of backgrounding. Foreground-running services are fine; tests run in parallel tabs.
 
 ---
 
