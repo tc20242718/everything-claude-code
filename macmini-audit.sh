@@ -143,6 +143,16 @@ if command -v openclaw &> /dev/null; then
         else
             echo -e "${GREEN}✓${NC} Telegram channel: connected"
         fi
+
+        # Check dmPolicy — pairing blocks plain text messages
+        DM_POLICY=$(openclaw config get channels.telegram.dmPolicy 2>/dev/null | tail -1 | tr -d '"' || true)
+        if [ "$DM_POLICY" = "pairing" ]; then
+            echo -e "${RED}✗${NC} dmPolicy=pairing: plain text messages will be ignored"
+            echo "  Fix: openclaw config set channels.telegram.dmPolicy allowlist && openclaw gateway --force"
+            ((ISSUES++))
+        elif [ -n "$DM_POLICY" ]; then
+            echo -e "${GREEN}✓${NC} dmPolicy: $DM_POLICY"
+        fi
     else
         echo -e "${YELLOW}⚠${NC}  OpenClaw gateway not responding — start with: openclaw gateway --force"
     fi

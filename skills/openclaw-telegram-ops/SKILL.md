@@ -25,6 +25,7 @@ openclaw config get channels.telegram    # Inspect Telegram channel config
 openclaw config set channels.telegram.botToken <token>  # Update token directly
 openclaw config set agents.defaults.model.primary ollama/qwen3:14b
 openclaw config set agents.main.profile default
+openclaw config set channels.telegram.dmPolicy allowlist  # Allow plain text from allowFrom list
 openclaw logs                            # Tail live gateway logs
 ```
 
@@ -104,6 +105,22 @@ Common causes in order:
 1. Gateway mode was `remote` — fix with `config set gateway.mode local`
 2. Wrong model configured — fix with `config set agents.defaults.model.primary`
 3. Multiple Ollama processes — fix with `pkill -f ollama && ollama serve &`
+
+---
+
+### 6. Bot Responds to /commands but Not Plain Text
+
+**Symptom:** Slash commands like `/help` work; plain text messages are silently ignored
+
+**Cause:** `channels.telegram.dmPolicy` is set to `pairing` — requires a pairing handshake before plain text is accepted
+
+**Fix:**
+```bash
+openclaw config set channels.telegram.dmPolicy allowlist
+openclaw gateway --force
+```
+
+**Why allowlist works:** The `allowFrom` list already contains your Telegram user ID. Switching to `allowlist` mode lets OpenClaw accept plain text from any ID in that list without requiring pairing.
 
 ---
 
