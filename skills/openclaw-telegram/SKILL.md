@@ -76,44 +76,33 @@ cat ~/.openclaw/openclaw.json | sed 's/"botToken":[ ]*"[^"]*"/"botToken": "[REDA
 
 ## Known Config Structure
 
+### agents.defaults
 ```json
 {
-  "agents": {
-    "defaults": {
-      "model": { "primary": "ollama/qwen3:14b" },
-      "workspace": "[path]"
-    }
+  "model": {
+    "primary": "ollama/qwen3:14b"
   },
-  "bindings": [
-    { "agentId": "main", "match": { "channel": "telegram" }, "type": "route" }
-  ],
-  "channels": {
-    "telegram": { "allowFrom": ["[id]"], "botToken": "[token]", "enabled": true }
-  },
-  "gateway": {
-    "auth": { "token": "[token]" },
-    "bind": "loopback",
-    "mode": "local",
-    "port": 18789
-  },
-  "tools": {
-    "profile": "coding"
+  "workspace": "/Users/[username]/.openclaw/workspace",
+  "maxConcurrent": 4,
+  "subagents": {
+    "maxConcurrent": 8
   }
 }
 ```
+
+**Note:** There is NO `generation` key. Generation settings are not (yet) configurable via CLI.
 
 ### Valid Config Key Paths
 
 | Goal | Correct Command |
 |------|----------------|
 | Set model | `openclaw config set agents.defaults.model.primary ollama/qwen3:14b` |
-| Set profile | `openclaw config set tools.profile messaging` |
-| Set temperature | `openclaw config set agents.defaults.generation.temperature 0.7` |
-| Set max tokens | `openclaw config set agents.defaults.generation.max_tokens 256` |
+| Set profile (Telegram: use `messaging`) | `openclaw config set tools.profile messaging` |
 | Restart gateway | `openclaw gateway --force` |
 
 **INVALID paths (do not use):**
 - `agents.main.profile` — "main" is a binding agentId, not a config key
+- `agents.defaults.generation.*` — generation key does not exist in schema
 - `tools.profile default` — "default" is not a valid profile value
 
 **Valid `tools.profile` values:** `minimal`, `coding`, `messaging`, `full`
@@ -128,15 +117,13 @@ For the best natural language quality with acceptable speed on M4 Pro:
 
 **Recommended model:** `ollama/qwen3:14b` (best balance for conversational replies)
 
-**Generation tuning for natural responses:**
+**Config for Telegram (messaging profile):**
 ```bash
-openclaw config set agents.defaults.model.primary ollama/qwen3:14b
 openclaw config set tools.profile messaging
-openclaw config set agents.defaults.generation.temperature 0.7
-openclaw config set agents.defaults.generation.top_p 0.9
-openclaw config set agents.defaults.generation.max_tokens 256
 openclaw gateway --force
 ```
+
+Note: Generation settings (temperature, top_p, max_tokens) are not currently configurable via CLI in this OpenClaw version.
 
 **Model trade-offs:**
 
@@ -201,7 +188,19 @@ openclaw config get agents.defaults.model
 **Fix:** OpenClaw commands must be run on the Mac. Repo work stays in the Linux environment.  
 **Rule:** Clearly distinguish between "run this on your Mac in Terminus" vs repo operations here.
 
+### ERROR-006: Suggested non-existent generation config keys
+**What happened:** Suggested commands like `openclaw config set agents.defaults.generation.temperature 0.7` but the `generation` key does not exist in `agents.defaults` schema. Error: `Unrecognized key: "generation"`.  
+**Fix:** Verify config schema structure before suggesting set commands. Asked user to run `openclaw config get agents.defaults` to see actual keys.  
+**Rule:** When unsure about a config path, ask the user to share the structure (keys only) to verify before suggesting commands.
+
 ---
+
+## Checklist Before Suggesting Config Commands
+
+- [ ] Have I verified the config key path exists by checking actual schema?
+- [ ] If unsure, ask user to run `openclaw config get [path]` and share structure only?
+- [ ] Are all commands single-line (no backslash continuation)?
+- [ ] Have I tested the command description against the documented valid paths?
 
 ## Checklist Before Asking User to Share Output
 
