@@ -96,9 +96,9 @@ cat ~/.openclaw/openclaw.json | sed 's/"botToken":[ ]*"[^"]*"/"botToken": "[REDA
 
 | Goal | Correct Command |
 |------|----------------|
-| Set model | `openclaw config set agents.defaults.model.primary ollama/qwen3:14b` |
-| Set profile (Telegram: use `messaging`) | `openclaw config set tools.profile messaging` |
-| Restart gateway | `openclaw gateway --force` |
+| Set model + restart | `openclaw config set agents.defaults.model.primary ollama/qwen3:14b && openclaw gateway --force` |
+| Set profile (Telegram: use `messaging`) + restart | `openclaw config set tools.profile messaging && openclaw gateway --force` |
+| Restart gateway only | `openclaw gateway --force` |
 
 **INVALID paths (do not use):**
 - `agents.main.profile` — "main" is a binding agentId, not a config key
@@ -119,8 +119,7 @@ For the best natural language quality with acceptable speed on M4 Pro:
 
 **Config for Telegram (messaging profile):**
 ```bash
-openclaw config set tools.profile messaging
-openclaw gateway --force
+openclaw config set tools.profile messaging && openclaw gateway --force
 ```
 
 Note: Generation settings (temperature, top_p, max_tokens) are not currently configurable via CLI in this OpenClaw version.
