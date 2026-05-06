@@ -160,8 +160,8 @@ time curl http://localhost:11434/api/generate -X POST -H 'Content-Type: applicat
 # Check OpenClaw logs for errors
 tail -50 ~/.openclaw/logs/gateway.log
 
-# Verify current model setting (safe to share — no credentials)
-openclaw config get agents.defaults.model
+# Verify current model setting
+openclaw config get agents.defaults.model.primary
 ```
 
 ### Expected Response Times
