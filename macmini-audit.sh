@@ -113,18 +113,44 @@ else
 fi
 echo ""
 
+# ── Ollama Process Check ───────────────────────────────────────────────────
+
+echo -e "${BLUE}[Ollama Processes]${NC}"
+OLLAMA_PROCS=$(ps aux | grep -c '[o]llama' || true)
+if [ "$OLLAMA_PROCS" -gt 1 ]; then
+    echo -e "${RED}✗${NC} Multiple Ollama processes detected ($OLLAMA_PROCS). This degrades performance."
+    echo "  Fix: pkill -f ollama && ollama serve &"
+    ((ISSUES++))
+elif [ "$OLLAMA_PROCS" -eq 1 ]; then
+    echo -e "${GREEN}✓${NC} Ollama: single process running"
+else
+    echo -e "${YELLOW}⚠${NC}  Ollama not running"
+fi
+echo ""
+
 # ── OpenClaw & Ollama (Optional) ───────────────────────────────────────────
 
 echo -e "${BLUE}[Optional: Service Endpoints]${NC}"
 
-# Check OpenClaw
-if command -v curl &> /dev/null; then
-    if curl -s -m 2 http://localhost:8000/health &> /dev/null; then
-        echo -e "${GREEN}✓${NC} OpenClaw responding on localhost:8000"
+# Check OpenClaw gateway (native port 18789, not 8000)
+if command -v openclaw &> /dev/null; then
+    OPENCLAW_STATUS=$(openclaw health 2>/dev/null | grep -E "telegram:|Agents:" | head -2 || true)
+    if [ -n "$OPENCLAW_STATUS" ]; then
+        echo -e "${GREEN}✓${NC} OpenClaw gateway running on localhost:18789"
+        if echo "$OPENCLAW_STATUS" | grep -q "failed (401)"; then
+            echo -e "${RED}✗${NC} Telegram channel: 401 Unauthorized — re-run: openclaw configure"
+            ((ISSUES++))
+        else
+            echo -e "${GREEN}✓${NC} Telegram channel: connected"
+        fi
     else
-        echo -e "${YELLOW}⚠${NC}  OpenClaw not responding (will be checked when bot starts)"
+        echo -e "${YELLOW}⚠${NC}  OpenClaw gateway not responding — start with: openclaw gateway --force"
     fi
+else
+    echo -e "${YELLOW}⚠${NC}  openclaw CLI not found"
+fi
 
+if command -v curl &> /dev/null; then
     # Check Ollama
     if curl -s -m 2 http://localhost:11434/api/tags &> /dev/null; then
         echo -e "${GREEN}✓${NC} Ollama responding on localhost:11434"
