@@ -56,11 +56,12 @@ cd everything-claude-code/.telegram-bot
 
 | File | Size | Purpose |
 |------|------|---------|
-| `bot.py` | 12.5 KB | Main Telegram bot (OpenClaw/Ollama routing, token encryption) |
-| `requirements.txt` | 184 B | Python 3 dependencies (arm64-compatible) |
+| `bot.py` | 12.5 KB | Legacy: Telegram bot (now handled by OpenClaw natively) |
+| `requirements.txt` | 184 B | Python 3 dependencies (upgraded 2026-05-07) |
+| `UPGRADE-SESSION-SUMMARY.md` | — | Session log: dependency upgrade + recurring issues documented |
 | `.env.example` | 876 B | Configuration template (fill with your values) |
-| `com.macmini.telegram-bot.plist` | 1.2 KB | LaunchAgent auto-start config (edit USERNAME before use) |
-| `README.md` | 8.1 KB | **Complete deployment guide (START HERE)** |
+| `com.macmini.telegram-bot.plist` | 1.2 KB | LaunchAgent auto-start config (deprecated; use OpenClaw) |
+| `README.md` | 8.1 KB | Complete deployment guide (outdated; see UPGRADE-SESSION-SUMMARY.md) |
 | `.gitignore` | 108 B | Exclude secrets from git |
 
 ### In root directory:
