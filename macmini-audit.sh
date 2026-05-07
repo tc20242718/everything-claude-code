@@ -37,7 +37,7 @@ if command -v brew &> /dev/null; then
 else
     echo -e "${RED}✗${NC} Homebrew not found"
     echo "  Install: /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
-    ((ISSUES++))
+    ISSUES=$((ISSUES + 1))
 fi
 echo ""
 
@@ -55,12 +55,12 @@ if command -v python3 &> /dev/null; then
         echo -e "${GREEN}✓${NC} Python version 3.9+ (required for cryptography)"
     else
         echo -e "${RED}✗${NC} Python version < 3.9 (required 3.9+)"
-        ((ISSUES++))
+        ISSUES=$((ISSUES + 1))
     fi
 else
     echo -e "${RED}✗${NC} Python 3 not found"
     echo "  Install: brew install python@3.11"
-    ((ISSUES++))
+    ISSUES=$((ISSUES + 1))
 fi
 
 # Check venv module
@@ -69,7 +69,7 @@ if python3 -c "import venv" 2>/dev/null; then
 else
     echo -e "${RED}✗${NC} venv module not available"
     echo "  On macOS: usually built-in. If missing, reinstall Python via Homebrew."
-    ((ISSUES++))
+    ISSUES=$((ISSUES + 1))
 fi
 echo ""
 
@@ -120,7 +120,7 @@ OLLAMA_PROCS=$(ps aux | grep -c '[o]llama' || true)
 if [ "$OLLAMA_PROCS" -gt 1 ]; then
     echo -e "${RED}✗${NC} Multiple Ollama processes detected ($OLLAMA_PROCS). This degrades performance."
     echo "  Fix: pkill -f ollama && ollama serve &"
-    ((ISSUES++))
+    ISSUES=$((ISSUES + 1))
 elif [ "$OLLAMA_PROCS" -eq 1 ]; then
     echo -e "${GREEN}✓${NC} Ollama: single process running"
 else
@@ -139,7 +139,7 @@ if command -v openclaw &> /dev/null; then
         echo -e "${GREEN}✓${NC} OpenClaw gateway running on localhost:18789"
         if echo "$OPENCLAW_STATUS" | grep -q "failed (401)"; then
             echo -e "${RED}✗${NC} Telegram channel: 401 Unauthorized — re-run: openclaw configure"
-            ((ISSUES++))
+            ISSUES=$((ISSUES + 1))
         else
             echo -e "${GREEN}✓${NC} Telegram channel: connected"
         fi
@@ -149,7 +149,7 @@ if command -v openclaw &> /dev/null; then
         if [ "$DM_POLICY" = "pairing" ]; then
             echo -e "${RED}✗${NC} dmPolicy=pairing: plain text messages will be ignored"
             echo "  Fix: openclaw config set channels.telegram.dmPolicy allowlist && openclaw gateway --force"
-            ((ISSUES++))
+            ISSUES=$((ISSUES + 1))
         elif [ -n "$DM_POLICY" ]; then
             echo -e "${GREEN}✓${NC} dmPolicy: $DM_POLICY"
         fi
@@ -194,3 +194,6 @@ else
     echo -e "${RED}✗ $ISSUES issue(s) found — please resolve before proceeding${NC}"
 fi
 echo ""
+
+# Exit non-zero so this script can be used as a CI / scripting gate.
+[ "$ISSUES" -eq 0 ] || exit 1

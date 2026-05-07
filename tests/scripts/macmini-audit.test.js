@@ -103,6 +103,22 @@ esac
 let passed = 0;
 let failed = 0;
 
+if (test('runs all checks even when an early section reports a failure (set -e + ((ISSUES++)) bug regression)', () => {
+  // If brew is missing, bash arithmetic `((ISSUES++))` returns the
+  // pre-increment value (0) which `set -e` treats as a fatal exit.
+  // Replacing it with `ISSUES=$((ISSUES + 1))` keeps the script running.
+  const dir = makeShimDir();
+  defaultShims(dir, { ollamaProcs: 1, openclaw: true, dmPolicy: 'allowlist' });
+  // Drop the brew shim so Homebrew check fails first.
+  fs.unlinkSync(path.join(dir, 'brew'));
+  const result = runAudit(dir);
+  assert.match(result.stdout, /Homebrew not found/, 'first failure must be detected');
+  assert.match(result.stdout, /Python 3 installed/, 'must continue past brew failure into Python check');
+  assert.match(result.stdout, /Ollama: single process running/, 'must reach Ollama section');
+  assert.match(result.stdout, /OpenClaw gateway running on localhost:18789/, 'must reach OpenClaw section');
+  assert.match(result.stdout, /issue\(s\) found/, 'summary line must render');
+})) passed++; else failed++;
+
 if (test('clean environment with no Ollama and no openclaw passes basic checks', () => {
   const dir = makeShimDir();
   defaultShims(dir, { ollamaProcs: 0, openclaw: false });
