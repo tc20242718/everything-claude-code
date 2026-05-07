@@ -1,13 +1,13 @@
 # Telegram NLP Bot — Deployment Manifest
 
-**Created:** 2026-05-03  
-**Version:** 1.1  
-**Status:** Ready for deployment  
+**Created:** 2026-05-03
+**Version:** 1.1
+**Status:** Ready for deployment
 **Platform:** macOS arm64 (M4 Pro)
 
 ---
 
-## 📦 Backup & Recovery
+## Backup & Recovery
 
 ### Backup Location
 ```
@@ -23,7 +23,7 @@ chmod 755 .telegram-bot/bot.py
 
 ---
 
-## 🔗 Repository Source
+## Repository Source
 
 **GitHub Repository:**
 ```
@@ -50,7 +50,7 @@ cd everything-claude-code/.telegram-bot
 
 ---
 
-## 📁 File Inventory
+## File Inventory
 
 ### In `.telegram-bot/` directory:
 
@@ -65,13 +65,14 @@ cd everything-claude-code/.telegram-bot
 | `.gitignore` | 108 B | Exclude secrets from git |
 
 ### In root directory:
+
 | File | Size | Purpose |
 |------|------|---------|
 | `macmini-audit.sh` | 5.8 KB | Pre-flight audit (Homebrew, Python, conflicts) |
 
 ---
 
-## 🚀 Quick Start (3 Steps)
+## Quick Start (3 Steps)
 
 ### 1. Pre-flight Check
 ```bash
@@ -94,7 +95,7 @@ python3 bot.py             # Run the bot
 
 ---
 
-## 📋 Deployment Checklist
+## Deployment Checklist
 
 - [ ] Run `macmini-audit.sh` to verify prerequisites
 - [ ] Copy `.env.example` to `.env`
@@ -110,7 +111,7 @@ python3 bot.py             # Run the bot
 
 ---
 
-## 🔐 Security Checklist
+## Security Checklist
 
 - [ ] `.env` file permissions: `chmod 600 ~/.telegram-bot/.env`
 - [ ] `TOKEN_ENCRYPT_PASSWORD` is strong (16+ chars)
@@ -122,7 +123,7 @@ python3 bot.py             # Run the bot
 
 ---
 
-## 📱 Bot Commands (From iPhone)
+## Bot Commands (From iPhone)
 
 ```
 /start   — Initialize bot
@@ -135,7 +136,7 @@ python3 bot.py             # Run the bot
 
 ---
 
-## 🛠️ System Commands
+## System Commands
 
 ```bash
 # Setup (first-time encryption)
@@ -168,7 +169,7 @@ launchctl start com.macmini.telegram-bot
 
 ---
 
-## 🔧 Troubleshooting Quick Links
+## Troubleshooting Quick Links
 
 | Issue | Solution |
 |-------|----------|
@@ -181,7 +182,7 @@ launchctl start com.macmini.telegram-bot
 
 ---
 
-## 📍 Important Paths
+## Important Paths
 
 ```
 # Bot directory
@@ -203,7 +204,7 @@ launchctl start com.macmini.telegram-bot
 
 ---
 
-## 🔄 Updates & Maintenance
+## Updates & Maintenance
 
 ### To pull latest updates from GitHub
 ```bash
@@ -238,7 +239,7 @@ launchctl load ~/Library/LaunchAgents/com.macmini.telegram-bot.plist
 
 ---
 
-## 📚 Documentation Files
+## Documentation Files
 
 1. **`README.md`** — Full step-by-step deployment guide (7 parts)
 2. **`MANIFEST.md`** — This file (quick reference & recovery)
@@ -247,7 +248,7 @@ launchctl load ~/Library/LaunchAgents/com.macmini.telegram-bot.plist
 
 ---
 
-## 🎯 Next Steps
+## Next Steps
 
 1. **Right now:** Read `.telegram-bot/README.md` for complete instructions
 2. **First deployment:** Follow Part 1-7 in the README
@@ -257,7 +258,7 @@ launchctl load ~/Library/LaunchAgents/com.macmini.telegram-bot.plist
 
 ---
 
-## 📞 Support
+## Support
 
 If something goes wrong:
 
@@ -269,6 +270,6 @@ If something goes wrong:
 
 ---
 
-**Backup created:** 2026-05-03 21:30 UTC  
-**Version:** 1.1 (dependencies upgraded)  
-**Ready for deployment:** ✅ Yes
+**Backup created:** 2026-05-03 21:30 UTC
+**Version:** 1.1 (dependencies upgraded)
+**Ready for deployment:** PASS: Yes

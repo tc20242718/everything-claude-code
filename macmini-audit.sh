@@ -78,13 +78,13 @@ echo ""
 echo -e "${BLUE}[Telegram Bot]${NC}"
 BOT_DIR="$HOME/.telegram-bot"
 if [ -d "$BOT_DIR" ]; then
-    echo -e "${YELLOW}⚠${NC}  Telegram bot directory exists: $BOT_DIR"
+    echo -e "${YELLOW}[WARN]${NC}  Telegram bot directory exists: $BOT_DIR"
 
     if [ -f "$BOT_DIR/bot.py" ]; then
         echo "  - bot.py found"
     fi
     if [ -f "$BOT_DIR/.env" ]; then
-        echo -e "${YELLOW}⚠${NC}  .env file exists (will need updating)"
+        echo -e "${YELLOW}[WARN]${NC}  .env file exists (will need updating)"
     fi
     if [ -f "$BOT_DIR/token.enc" ]; then
         echo "  - Encrypted token already stored"
@@ -102,7 +102,7 @@ echo ""
 echo -e "${BLUE}[LaunchAgent]${NC}"
 PLIST_PATH="$HOME/Library/LaunchAgents/com.macmini.telegram-bot.plist"
 if [ -f "$PLIST_PATH" ]; then
-    echo -e "${YELLOW}⚠${NC}  LaunchAgent plist already exists"
+    echo -e "${YELLOW}[WARN]${NC}  LaunchAgent plist already exists"
     if launchctl list | grep -q "com.macmini.telegram-bot"; then
         echo "  Service currently running (will need to unload first)"
     else
@@ -124,7 +124,7 @@ if [ "$OLLAMA_PROCS" -gt 1 ]; then
 elif [ "$OLLAMA_PROCS" -eq 1 ]; then
     echo -e "${GREEN}✓${NC} Ollama: single process running"
 else
-    echo -e "${YELLOW}⚠${NC}  Ollama not running"
+    echo -e "${YELLOW}[WARN]${NC}  Ollama not running"
 fi
 echo ""
 
@@ -154,10 +154,10 @@ if command -v openclaw &> /dev/null; then
             echo -e "${GREEN}✓${NC} dmPolicy: $DM_POLICY"
         fi
     else
-        echo -e "${YELLOW}⚠${NC}  OpenClaw gateway not responding — start with: openclaw gateway --force"
+        echo -e "${YELLOW}[WARN]${NC}  OpenClaw gateway not responding — start with: openclaw gateway --force"
     fi
 else
-    echo -e "${YELLOW}⚠${NC}  openclaw CLI not found"
+    echo -e "${YELLOW}[WARN]${NC}  openclaw CLI not found"
 fi
 
 if command -v curl &> /dev/null; then
@@ -167,10 +167,10 @@ if command -v curl &> /dev/null; then
         MODELS=$(curl -s http://localhost:11434/api/tags 2>/dev/null | grep -o '"name":"[^"]*' | cut -d'"' -f4 | wc -l)
         echo "  Models loaded: $MODELS"
     else
-        echo -e "${YELLOW}⚠${NC}  Ollama not responding (will be checked when bot starts)"
+        echo -e "${YELLOW}[WARN]${NC}  Ollama not responding (will be checked when bot starts)"
     fi
 else
-    echo -e "${YELLOW}⚠${NC}  curl not found (skipping endpoint checks)"
+    echo -e "${YELLOW}[WARN]${NC}  curl not found (skipping endpoint checks)"
 fi
 echo ""
 

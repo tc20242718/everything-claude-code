@@ -1,7 +1,7 @@
 # Telegram + OpenClaw Upgrade Session Summary
 
-**Date:** 2026-05-07  
-**Branch:** `claude/upgrade-telegram-cBTet`  
+**Date:** 2026-05-07
+**Branch:** `claude/upgrade-telegram-cBTet`
 **Status:** Dependencies upgraded, OpenClaw integrated, recurring issues documented
 
 ---
@@ -20,7 +20,7 @@ Updated `.telegram-bot/requirements.txt` to latest versions:
 ### 2. Architecture Change: OpenClaw Native Integration
 Discovered OpenClaw has **native Telegram support** built-in (`openclaw channels`). This is better than routing through `bot.py`:
 
-**Old approach:** iPhone → Telegram → bot.py → OpenClaw → Ollama  
+**Old approach:** iPhone → Telegram → bot.py → OpenClaw → Ollama
 **New approach:** iPhone → Telegram → OpenClaw (natively) → Ollama
 
 **Benefits:**
@@ -57,14 +57,14 @@ Discovered OpenClaw has **native Telegram support** built-in (`openclaw channels
 ## Current State (End of Session)
 
 **What's Working:**
-- ✅ OpenClaw gateway running on localhost:18789
-- ✅ Ollama running on localhost:11434 (1 process)
-- ✅ Telegram bot connected natively
-- ✅ Slash commands work (`/help`, etc.)
-- ✅ Models configured: qwen3:14b (default), llama3.1:8b, qwen3-coder:30b
+- PASS: OpenClaw gateway running on localhost:18789
+- PASS: Ollama running on localhost:11434 (1 process)
+- PASS: Telegram bot connected natively
+- PASS: Slash commands work (`/help`, etc.)
+- PASS: Models configured: qwen3:14b (default), llama3.1:8b, qwen3-coder:30b
 
 **What's Still Being Tested:**
-- ⏳ Plain text natural language responses (requires dmPolicy=allowlist to be set and gateway restarted)
+- Plain text natural language responses (requires dmPolicy=allowlist to be set and gateway restarted)
 
 ---
 
@@ -75,8 +75,8 @@ OpenClaw's Telegram channel has a `dmPolicy` setting that controls how it handle
 - `dmPolicy=pairing` — requires a handshake; silently ignores plain text from unpaired users
 - `dmPolicy=allowlist` — allows plain text from any ID in the `allowFrom` list (your ID is already there)
 
-**Current config:** pairing (blocking natural language)  
-**Fix:** 
+**Current config:** pairing (blocking natural language)
+**Fix:**
 ```bash
 openclaw config set channels.telegram.dmPolicy allowlist
 openclaw gateway --force
@@ -84,7 +84,7 @@ openclaw gateway --force
 
 ### Why Multiple Ollama Processes Happened
 Ollama was started from multiple sources simultaneously:
-1. Manual `ollama serve &` 
+1. Manual `ollama serve &`
 2. OpenClaw's internal Ollama integration
 3. Restart cascades during testing
 

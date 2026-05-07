@@ -3,12 +3,12 @@
 A Telegram bot that routes natural language messages through OpenClaw → LLM stack → back to your iPhone.
 
 **Key Features:**
-- 🔐 AES-256-CBC encrypted token persistence (no manual reconnection)
-- 🤖 OpenClaw primary routing with Ollama fallback
-- 🛡️ Hard-blocks PII and sensitive financial data
-- 🚀 Auto-starts on Mac Mini boot via LaunchAgent
-- 📱 Full control from iPhone Telegram app
-- 🎯 User ID whitelist (only you can access)
+- AES-256-CBC encrypted token persistence (no manual reconnection)
+- OpenClaw primary routing with Ollama fallback
+- Hard-blocks PII and sensitive financial data
+- Auto-starts on Mac Mini boot via LaunchAgent
+- Full control from iPhone Telegram app
+- User ID whitelist (only you can access)
 
 ## What It Does
 
@@ -132,10 +132,10 @@ Expected startup:
 
 **From iPhone Telegram:**
 1. Search for your bot by username (e.g., `@macmini_coach_bot`)
-2. Send `/start` → bot replies with welcome message ✅
-3. Send `/status` → bot shows OpenClaw + Ollama health ✅
-4. Send `/models` → bot lists loaded Ollama models ✅
-5. Send any natural language message → bot routes through OpenClaw → response ✅
+2. Send `/start` → bot replies with welcome message PASS:
+3. Send `/status` → bot shows OpenClaw + Ollama health PASS:
+4. Send `/models` → bot lists loaded Ollama models PASS:
+5. Send any natural language message → bot routes through OpenClaw → response PASS:
 
 **Stop the bot:**
 ```
@@ -187,7 +187,7 @@ From your iPhone, send these commands and verify responses:
 | Message | Expected |
 |---------|----------|
 | `/start` | Welcome message with command list |
-| `/status` | ✅ OpenClaw online, ✅ Ollama with N models |
+| `/status` | PASS: OpenClaw online, PASS: Ollama with N models |
 | `/models` | List of installed Ollama models with sizes |
 | `/help` | Command reference and security reminder |
 | `what is my system status` | Natural language routed to OpenClaw → response |
@@ -195,7 +195,7 @@ From your iPhone, send these commands and verify responses:
 
 ## Security Rules (Read These)
 
-⚠️ **Never send through Telegram:**
+WARNING: **Never send through Telegram:**
 - Client names or account numbers
 - Portfolio positions or trade details
 - Social security numbers or passport info
@@ -306,6 +306,6 @@ If something goes wrong:
 
 ---
 
-**Version:** v1.1  
-**Platform:** macOS (arm64/M4 Pro)  
+**Version:** v1.1
+**Platform:** macOS (arm64/M4 Pro)
 **Last Updated:** 2026-05-03

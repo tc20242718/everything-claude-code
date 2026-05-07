@@ -1,3 +1,9 @@
+---
+name: openclaw-telegram-ops
+description: Operate and troubleshoot the OpenClaw + Telegram + Ollama stack on macOS. Covers gateway startup, channel auth, model selection, dmPolicy, and 6 recurring failure patterns with exact fixes.
+origin: ECC
+---
+
 # OpenClaw + Telegram Operations
 
 ## When to Use

@@ -186,20 +186,20 @@ async def cmd_status(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None:
     try:
         async with httpx.AsyncClient(timeout=5) as client:
             r = await client.get(f"{OPENCLAW_URL}/health")
-            results.append(f"OpenClaw: {'✅ online' if r.status_code == 200 else '⚠️ ' + str(r.status_code)}")
+            results.append(f"OpenClaw: {'[PASS] online' if r.status_code == 200 else '[WARN] ' + str(r.status_code)}")
     except Exception:
-        results.append("OpenClaw: ❌ unreachable")
+        results.append("OpenClaw: [FAIL] unreachable")
 
     # Check Ollama
     try:
         async with httpx.AsyncClient(timeout=5) as client:
             r = await client.get(f"{OLLAMA_URL}/api/tags")
             models = [m["name"] for m in r.json().get("models", [])]
-            results.append(f"Ollama: ✅ {len(models)} models")
+            results.append(f"Ollama: [PASS] {len(models)} models")
     except Exception:
-        results.append("Ollama: ❌ unreachable")
+        results.append("Ollama: [FAIL] unreachable")
 
-    results.append(f"Bot: ✅ running")
+    results.append(f"Bot: [PASS] running")
     results.append(f"Time: {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}")
 
     await update.message.reply_text("\n".join(results))
@@ -246,7 +246,7 @@ async def handle_message(update: Update, ctx: ContextTypes.DEFAULT_TYPE) -> None
     # Hard security block
     if is_blocked(text):
         await update.message.reply_text(
-            "⚠️ BLOCKED — Message contains sensitive financial or PII keywords.\n"
+            "[WARN] BLOCKED — Message contains sensitive financial or PII keywords.\n"
             "Telegram transmits through third-party servers.\n"
             "Use a local channel for this data."
         )
