@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.macmini.telegram-bot</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/root/.telegram-bot/venv/bin/python3</string>
+        <string>/root/.telegram-bot/bot.py</string>
+    </array>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>TOKEN_ENCRYPT_PASSWORD</key>
+        <string>YOUR_ENCRYPTION_PASSWORD_HERE</string>
+        <key>ALLOWED_USER_IDS</key>
+        <string>YOUR_TELEGRAM_USER_ID_HERE</string>
+        <key>OPENCLAW_URL</key>
+        <string>http://localhost:8000</string>
+        <key>OLLAMA_URL</key>
+        <string>http://localhost:11434</string>
+        <key>OLLAMA_MODEL</key>
+        <string>qwen3:14b</string>
+    </dict>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/root/.telegram-bot/bot.log</string>
+    <key>StandardErrorPath</key>
+    <string>/root/.telegram-bot/bot-error.log</string>
+    <key>ThrottleInterval</key>
+    <integer>30</integer>
+</dict>
+</plist>
