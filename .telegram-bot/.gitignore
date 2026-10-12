@@ -1,0 +1,11 @@
+# Environment & Secrets
+.env
+token.enc
+
+# Runtime
+venv/
+*.log
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
